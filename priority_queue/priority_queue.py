@@ -50,37 +50,68 @@ class MinHeap:
         return len(self.data) == 0
 
     def peek(self):
-        # TODO: Return (priority, item) but do NOT remove
-        # If empty, return None (or raise an error)
-        pass
+        if self.data:
+            return self.data[0]
+        else:
+            return "None"
 
     def add(self, priority, item):
-        # TODO: Add (priority, item) to end of list
-        # Then bubble it UP into correct position
-        pass
+        self.data.append((priority, item)) #add new element to end of list
+        idx = len(self.data) - 1 #0-based so index is one less than list length
+        self._bubble_up(idx) #move up to proper priority
 
     def pop_min(self):
-        # TODO: Remove and return the smallest element (priority, item)
-        # Steps:
-        # 1) swap root with last element
-        # 2) pop last element (former root)
-        # 3) bubble DOWN new root
-        pass
+        if self.data: #check list not empty
+            last_element = self.data[0] #save old root
+            if len(self.data) == 1: #if list is 1 long no need to bubble
+                self.data.pop()
+                return last_element
+            else:
+                self.data[0], self.data[-1] = self.data[-1], self.data[0] #swap first and last elements
+                self.data.pop() #pop old root
+                self._bubble_down(0) #move new minimum element down to proper priority
+                return last_element
+        else:
+            return "None"
 
     def _bubble_up(self, idx):
-        # TODO: Implement
-        # Keep swapping this node with its parent while it has a smaller priority.
-        # parent index = (idx - 1) // 2
-        # Stop when you reach the root OR parent already has <= priority.
-        pass
+        parent = (idx - 1) // 2 #identify parent
+        parent_priority = self.data[parent][0] #get parent priority
+        idx_priority = self.data[idx][0] #get new element's priority
+        while idx != 0 and parent_priority > idx_priority: #stop when parent is greater priority or when new element has become the new root
+            self.data[idx], self.data[parent] = self.data[parent], self.data[idx] #swap new element and parent
+            idx = parent #new element now has index of old parent
+            parent = (idx - 1) // 2 #identify new parent
+            parent_priority = self.data[parent][0] #get new parent's priority
+            idx_priority = self.data[idx][0] #get new element's new priority
 
     def _bubble_down(self, idx):
-        # Keep swapping this node downward until the heap property is restored.
-        # left child = 2*idx + 1, right child = 2*idx + 2
-        # Find the smaller child, then swap if current priority is bigger.
-        # Stop when no children exist OR current is <= both children.
-        pass
-
+        left_child = 2 * idx + 1 #identify potential left child
+        right_child = 2 * idx + 2 #identify protential right child
+        if left_child >= len(self.data): #stop if no left child
+            pass
+        else:
+            if right_child >= len(self.data): #if no right child, left child is the lowest priority child
+                small = left_child
+            elif self.data[left_child][0] > self.data[right_child][0]: #if both children exist, check if right child has lower priority
+                small = right_child
+            else:
+                small = left_child #if both exist, and right does not have lowest priority, left is lowest priority
+            small_priority = self.data[small][0] #get priority of lowest priority child
+            idx_priority = self.data[idx][0] #get priority of element to be bubbled down
+            while small_priority < idx_priority and left_child < len(self.data): #stop when all children are lower priority than parent or when there are no children
+                self.data[idx], self.data[small] = self.data[small], self.data[idx] #swap parent and lowest priority child
+                idx = small #element being bubbled down now has index of smallest child
+                left_child = 2 * idx + 1 #find new potential left child
+                right_child = 2 * idx + 2 #find new potential right child
+                if right_child >= len(self.data): #if no right child, left child is the lowest priority
+                    small = left_child
+                elif self.data[left_child][0] > self.data[right_child][0]: #if both children exist, check if right child has lower priority
+                    small = right_child
+                else:
+                    small = left_child #if both exist, and right does not have lowest priority, left is lowest priority
+                small_priority = self.data[small][0] #get priority of lowest priority child
+                idx_priority = self.data[idx][0] #get priority of element to be bubbled down
 
 # Once you have a min heap, the priority queue is pretty straightforward. 
 # Make sure you understand what it is doing
